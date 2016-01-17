@@ -1,0 +1,171 @@
+<! DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>ECharts</title>
+</head>
+
+
+<body>
+
+<div id="main" style="height:100%"></div>
+
+<script src="jquery.min.js" type="text/javascript"></script>
+<script src="dist/echarts.js"></script>
+<script src="JSON-js/json_parse.js"></script>
+
+
+<script type="text/javascript">
+	//路径配置
+	require.config({
+		paths: {
+			echarts: 'dist'
+		}
+	});
+	
+	require(
+		[
+			'echarts',
+			'zrender',
+			'echarts/chart/bar',
+            'echarts/chart/line'
+		],
+		function(ec){
+			myChart = ec.init(document.getElementById('main'), 'macarons');
+			
+			myChart.setOption(option);
+		}
+	);
+			
+	var zrColor = require('zrender/tool/color');
+	var colorList = [
+	  '#ff7f50','#87cefa','#da70d6','#32cd32','#6495ed',
+	  '#ff69b4','#ba55d3','#cd5c5c','#ffa500','#40e0d0'
+	];
+	var itemStyle = {
+		normal: {
+			color: function(params) {
+			  if (params.dataIndex < 0) {
+				// for legend
+				return zrColor.lift(
+				  colorList[colorList.length - 1], params.seriesIndex * 0.1
+				);
+			  }
+			  else {
+				// for bar
+				return zrColor.lift(
+				  colorList[params.dataIndex], params.seriesIndex * 0.1
+				);
+			  }
+			}
+		}
+	};
+	
+	option = {
+		title: {
+			text: '2009-2015年StackOverflow主流编程语言提问数量统计图',
+			subtext: '数据来自StackExchange',
+			sublink: 'https://archive.org/download/stackexchange/stackoverflow.com-Posts.7z'
+			<!--最新在线数据https://data.stackexchange.com/stackoverflow/query/419525/r-trends-questions-per-tag-per-year-->
+		},
+		tooltip: {
+			trigger: 'axis',
+			backgroundColor: 'rgba(255,255,255,0.7)',
+			axisPointer: {
+				type: 'shadow'
+			},
+			formatter: function(params) {
+				// for text color
+				var color = colorList[params[0].dataIndex];
+				var res = '<div style="color:' + color + '">';
+				res += '<strong>' + params[0].name + '发帖数量</strong>'
+				for (var i = 0, l = params.length; i < l; i++) {
+					res += '<br/>' + params[i].seriesName + ' : ' + params[i].value 
+				}
+				res += '</div>';
+				return res;
+			}
+		},
+		legend: {
+			x: 'right',
+			data:['2009','2010','2011','2012','2013','2014','2015']
+		},
+		toolbox: {
+			show: true,
+			orient: 'vertical',
+			y: 'center',
+			feature: {
+				mark: {show: true},
+                dataView: {show: true, readOnly: false},
+                magicType:{'show':true,'type':['line','bar','stack','tiled']},
+                restore: {show: true},
+                saveAsImage: {show: true}
+			}
+		},
+		calculable: true,
+		grid: {
+			y: 80,
+			y2: 40,
+			x2: 40
+		},
+		xAxis: [
+			{
+				type: 'category',
+				data: ['c', 'c++', 'c#', 'objective-c', 'java', 'javascript',  'python', 'php', 'css']
+			}
+		],
+		yAxis: [
+			{
+				type: 'value'
+			}
+		],
+		series: [
+			{
+				name: '2009',
+				type: 'bar',
+				itemStyle: itemStyle,
+				data: [6621,15335,45127,6137,23697,18313,12614,19931,6625]
+			},
+			{
+				name: '2010',
+				type: 'bar',
+				itemStyle: itemStyle,
+				data: [14884,30897,74453,17451,53718,42639,26418,50406,15030]
+			},
+			{
+				name: '2011',
+				type: 'bar',
+				itemStyle: itemStyle,
+				data: [21789,46095,111391,38034,97808,88646,41229,94174,31210]
+			},
+            {
+                name: '2012',
+                type: 'bar',
+                itemStyle: itemStyle,
+                data: [29836,60342,136486,45493,142693,131045,62632,128733,46099]
+            },
+            {
+                name: '2013',
+                type: 'bar',
+                itemStyle: itemStyle,
+                data: [38973,78292,162040,46101,187008,190606,93694,162698,70770]
+            },
+            {
+                name: '2014',
+                type: 'bar',
+                itemStyle: itemStyle,
+                data: [39909,78808,159607,46376,211520,228568,112923,172585,83223]
+            },
+            {
+                name: '2015',
+                type: 'bar',
+                itemStyle: itemStyle,
+                data: [39643,81078,166465,38478,228552,271427,143018,180025,87515]
+            }
+		]
+	};
+    
+</script>
+
+</body>
+</html>

@@ -1,0 +1,19 @@
+<html>
+<script src="json2.js"></script>
+<script>
+var str = '{"name":"Violet","occupation":"character"}';   
+var obj = JSON.parse(str);   
+
+var loc = {name:"beijing",geoCoord:[1,2]};
+function writeObj(obj){ 
+    var description = ""; 
+    for(var i in obj){   
+        var property=obj[i];   
+        description+=i+" = "+property+"\n";  
+    }   
+    console.log(description); 
+} 
+
+console.log(typeof(loc));
+</script>
+</html>
