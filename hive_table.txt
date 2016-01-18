@@ -1,0 +1,43 @@
+create table questionPost(
+id int,
+acceptedAnswerId string,
+creationDate string,
+score int,
+viewCount int,
+body string,
+owner string,
+title string,
+tags string,
+answerCount int,
+commentCount int,
+favoriteCount int
+)clustered by (id) sorted by (id asc) into 30 buckets
+ROW FORMAT DELIMITED FIELDS TERMINATED BY '|';
+
+
+create table answerPost(
+id int,
+parentId string,
+creationDate string,
+score int,
+body string,
+owner string,
+commentCount int
+)clustered by (id) sorted by (id asc) into 30 buckets
+ROW FORMAT DELIMITED FIELDS TERMINATED BY '|';
+
+
+create table voteTime(
+status int,
+creationDate string
+)ROW FORMAT DELIMITED FIELDS TERMINATED BY '|';
+
+
+create table commentData(
+id int,
+postId int,
+score int,
+creationDate string,
+userId string
+)clustered by (id) sorted by (id asc) into 10 buckets
+ROW FORMAT DELIMITED FIELDS TERMINATED BY '|';
