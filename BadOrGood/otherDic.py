@@ -13,7 +13,7 @@ def genDayhotDic(fn):
             for h in xrange(24): d[year][month][day][h] = cntList[h]
     return d
 
-dayhotDic = genDayhotDic('/home/ck/zhangliang/ss_homework/BadOrGood/answerPostByHour')
+dayhotDic = genDayhotDic('answerPostByHour')
 
 popTags = {'javascript':1016937,
 'java':987284,
