@@ -148,38 +148,31 @@ def main():
     hc = HiveContext(sc)
 
     #fetch data
-    filepath = '/sshomework_zl/BadOrGood/AllDataRowrdd'
+    #filepath = '/sshomework_zl/BadOrGood/AllDataRowrdd'
     #fetchDataToFile(hc, filepath)
     
     #load data
-    AllDataRawrdd = sc.pickleFile(filepath) \
-                    .map( lambda _: {'label':int(_.status), 'feature':extractFeature(_)} ) \
-                    .repartition(10)
-    #sampling
-    trainDataRawrdd, testDataRawrdd = AllDataRawrdd.randomSplit(weights=[0.7, 0.3], seed=100)
-
+    # AllDataRawrdd = sc.pickleFile(filepath) \
+                    # .map( lambda _: {'label':int(_.status), 'feature':extractFeature(_)} ) \
+                    # .repartition(10)
+    
+    AllDataRawrdd = sc.pickleFile('/pickleData').repartition(10)
+    
+    
     #standardizer for train and test data
     model = StandardScaler(True, True) \
-            .fit( trainDataRawrdd \
+            .fit( AllDataRawrdd \
                   .map( lambda _: Vectors.dense(_['feature']) ) 
             )
-    labels = trainDataRawrdd.map(lambda _: _['label'])
-    featureTransformed = model.transform( trainDataRawrdd.map(lambda _: _['feature']) )
-    trainDatardd = labels \
+    labels = AllDataRawrdd.map(lambda _: _['label'])
+    featureTransformed = model.transform( AllDataRawrdd.map(lambda _: _['feature']) )
+    AllDataRawrdd = labels \
                     .zip(featureTransformed) \
-                    .map( lambda _: LabeledPoint( _[0], _[1] ) ) \
-                    .persist()
-    
-    model = StandardScaler(True, True) \
-            .fit( testDataRawrdd \
-                  .map( lambda _: Vectors.dense(_['feature']) ) 
-            )
-    labels = testDataRawrdd.map(lambda _: _['label'])
-    featureTransformed = model.transform( testDataRawrdd.map(lambda _: _['feature']) )
-    testDatardd = labels \
-                    .zip(featureTransformed) \
-                    .map( lambda _: {'label': _[0], 'feature': list(_[1]) }) \
-                    .persist()
+                    .map( lambda _: { 'label':_[0], 'feature':_[1] } )
+    #sampling
+    trainDataRawrdd, testDataRawrdd = AllDataRawrdd.randomSplit(weights=[0.7, 0.3], seed=100)
+    trainDatardd = trainDataRawrdd.map( lambda _: LabeledPoint( _['label'], _['feature'] ) ).persist()
+    testDatardd = testDataRawrdd.map( lambda _: {'label': _['label'], 'feature': list(_['feature']) } ).persist()
     
     #prediction & test
     lrmLBFGS = LogisticRegressionWithLBFGS.train(trainDatardd, iterations=3000, regParam=0.01, regType="l1")
